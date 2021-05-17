@@ -1,15 +1,15 @@
 from mvIMPACT import acquire
 from sense_hat import SenseHat
-# from corning_varioptic import corning_usb
+from opto import Opto
 import numpy as np
 import ctypes
 import time
 
 # config
 N_VALUES = 32
-START = 16000
-STOP = 36000
-LENS_ADDRESS = "/dev/usb/tty2"
+START = -20
+STOP = 150
+LENS_ADDRESS = "/dev/serial"
 
 # Initialise devices
 sense = SenseHat()
@@ -30,8 +30,9 @@ ac.binningMode.write(acquire.cbmBinningHV)
 fi = acquire.FunctionInterface(pDev)
 
 # lens values to cycle through
-lens_values = np.linspace(16000, 36000, N_VALUES)
-ll = corning_usb(LENS_ADDRESS)
+lens_values = np.linspace(START, STOP, N_VALUES)
+o = Opto(port=LENS_ADDRESS)
+o.connect()
 
 def recordImage(filename):
     fi.imageRequestSingle()
@@ -64,7 +65,7 @@ frame_number = 0
 
 while(1):
     for v in lens_values:
-        ll.set_voltage(v)
+        o.current(v)
         sense.clear((80, 80, 0))
         imu_values = getIMUValues(sense)
         sense.clear((0, 80, 0))

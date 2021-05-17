@@ -9,7 +9,7 @@ import time
 N_VALUES = 32
 START = 16000
 STOP = 36000
-LENS_ADDRESS = "/dev/usb/tty2"
+LENS_ADDRESS = "/dev/ttyUSB0"
 
 # Initialise devices
 sense = SenseHat()
