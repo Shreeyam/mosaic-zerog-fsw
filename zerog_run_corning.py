@@ -65,6 +65,7 @@ frame_number = 0
 while(1):
     for v in lens_values:
         ll.set_voltage(v)
+        time.sleep(0.05)
         sense.clear((80, 80, 0))
         imu_values = getIMUValues(sense)
         sense.clear((0, 80, 0))
