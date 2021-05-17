@@ -9,7 +9,7 @@ import time
 N_VALUES = 32
 START = -20
 STOP = 150
-LENS_ADDRESS = "/dev/serial"
+LENS_ADDRESS = "/dev/serial/by-id/usb-Optotune_LD_Optotune_LD_75738303238351915191-if00"
 
 # Initialise devices
 sense = SenseHat()
@@ -58,7 +58,7 @@ def getIMUValues(sense):
 
 def generateFileName(frame_number, imu_tuple, time, voltage):
     accel, gyro, compass = imu_tuple
-    return f"{frame_number}_{time:.2f}_{voltage}_{accel['x']:.6f}_{accel['y']:.6f}_{accel['x']:.6f}_{gyro['x']:.6f}_{gyro['y']:.6f}_{gyro['x']:.6f}_{compass['x']:.6f}_{compass['y']:.6f}_{compass['x']:.6f}.npy"
+    return f"{frame_number}_{time:.2f}_{voltage}_{accel['x']:.6f}_{accel['y']:.6f}_{accel['z']:.6f}_{gyro['x']:.6f}_{gyro['y']:.6f}_{gyro['z']:.6f}_{compass['x']:.6f}_{compass['y']:.6f}_{compass['z']:.6f}"
     
 
 frame_number = 0
@@ -66,6 +66,7 @@ frame_number = 0
 while(1):
     for v in lens_values:
         o.current(v)
+        time.sleep(0.02)
         sense.clear((80, 80, 0))
         imu_values = getIMUValues(sense)
         sense.clear((0, 80, 0))
