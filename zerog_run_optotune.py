@@ -6,9 +6,9 @@ import ctypes
 import time
 
 # config
-N_VALUES = 32
+N_VALUES = 64
 START = -20
-STOP = 150
+STOP = 120
 LENS_ADDRESS = "/dev/serial/by-id/usb-Optotune_LD_Optotune_LD_75738303238351915191-if00"
 
 # Initialise devices
