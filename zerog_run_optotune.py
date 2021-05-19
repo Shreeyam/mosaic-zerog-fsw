@@ -56,9 +56,9 @@ def getIMUValues(sense):
 
     return (accel, gyro, compass)
 
-def generateFileName(frame_number, imu_tuple, time, voltage):
+def generateFileName(frame_number, imu_tuple, time, voltage, temperature, pressure):
     accel, gyro, compass = imu_tuple
-    return f"{frame_number}_{time:.2f}_{voltage}_{accel['x']:.6f}_{accel['y']:.6f}_{accel['z']:.6f}_{gyro['x']:.6f}_{gyro['y']:.6f}_{gyro['z']:.6f}_{compass['x']:.6f}_{compass['y']:.6f}_{compass['z']:.6f}"
+    return f"{frame_number}_{time:.2f}_{voltage:.2f}_{temperature:.2f}_{pressure:.2f}_{accel['x']:.6f}_{accel['y']:.6f}_{accel['z']:.6f}_{gyro['x']:.6f}_{gyro['y']:.6f}_{gyro['z']:.6f}_{compass['x']:.6f}_{compass['y']:.6f}_{compass['z']:.6f}"
     
 
 frame_number = 0
@@ -68,9 +68,10 @@ while(1):
         o.current(v)
         time.sleep(0.02)
         sense.clear((80, 80, 0))
-        imu_values = getIMUValues(sense)
+        temp = sense.get_temperature()
+        pressure = sense.get_pressure()
         sense.clear((0, 80, 0))
-        filename = generateFileName(frame_number, imu_values, time.time(), v)
+        filename = generateFileName(frame_number, imu_values, time.time(), v, temp, pressure)
         sense.clear((0, 80, 80))
         recordImage(filename)
         sense.clear((0, 0, 80))

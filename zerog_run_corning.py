@@ -7,8 +7,8 @@ import time
 
 # config
 N_VALUES = 32
-START = 16000
-STOP = 36000
+START = 18000
+STOP = 38000
 LENS_ADDRESS = "/dev/ttyUSB0"
 
 # Initialise devices
@@ -30,7 +30,7 @@ ac.binningMode.write(acquire.cbmBinningHV)
 fi = acquire.FunctionInterface(pDev)
 
 # lens values to cycle through
-lens_values = np.linspace(16000, 36000, N_VALUES)
+lens_values = np.linspace(16000, 36000, N_VALUES, dtype=int)
 ll = corning_usb(LENS_ADDRESS)
 
 def recordImage(filename):
@@ -45,7 +45,7 @@ def recordImage(filename):
             channelType = np.uint16 if pRequest.imageChannelBitDepth.read() > 8 else np.uint8
             image = np.frombuffer(cbuf, dtype=channelType)
             image.shape = (pRequest.imageHeight.read(), pRequest.imageWidth.read(), pRequest.imageChannelCount.read())
-            np.savez_compressed(filename, image)
+            np.save(filename, image)
             pRequest.unlock()
 
 def getIMUValues(sense):
@@ -55,9 +55,9 @@ def getIMUValues(sense):
 
     return (accel, gyro, compass)
 
-def generateFileName(frame_number, imu_tuple, time, voltage):
+def generateFileName(frame_number, imu_tuple, time, voltage, temperature, pressure):
     accel, gyro, compass = imu_tuple
-    return f"{frame_number}_{time:.2f}_{voltage}_{accel['x']:.6f}_{accel['y']:.6f}_{accel['z']:.6f}_{gyro['x']:.6f}_{gyro['y']:.6f}_{gyro['z']:.6f}_{compass['x']:.6f}_{compass['y']:.6f}_{compass['z']:.6f}"
+    return f"{frame_number}_{time:.2f}_{voltage:.2f}_{temperature:.2f}_{pressure:.2f}_{accel['x']:.6f}_{accel['y']:.6f}_{accel['z']:.6f}_{gyro['x']:.6f}_{gyro['y']:.6f}_{gyro['z']:.6f}_{compass['x']:.6f}_{compass['y']:.6f}_{compass['z']:.6f}"
     
 
 frame_number = 0
@@ -68,8 +68,10 @@ while(1):
         time.sleep(0.02)
         sense.clear((80, 80, 0))
         imu_values = getIMUValues(sense)
+        temp = sense.get_temperature()
+        pressure = sense.get_pressure()
         sense.clear((0, 80, 0))
-        filename = generateFileName(frame_number, imu_values, time.time(), v)
+        filename = generateFileName(frame_number, imu_values, time.time(), v, temp, pressure)
         sense.clear((0, 80, 80))
         recordImage(filename)
         sense.clear((0, 0, 80))
