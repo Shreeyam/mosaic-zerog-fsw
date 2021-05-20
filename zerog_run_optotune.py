@@ -24,7 +24,7 @@ pDev = devMgr.getDevice(0)
 pDev.open()
 ac = acquire.CameraSettingsBlueFOX(pDev)
 ac.expose_us.write(10)
-ac.binningMode.write(acquire.cbmBinning3H3V)
+ac.binningMode.write(acquire.cbmBinningHV)
 
 # Get the function interface
 fi = acquire.FunctionInterface(pDev)
@@ -48,6 +48,7 @@ def recordImage(filename):
             channelType = np.uint16 if pRequest.imageChannelBitDepth.read() > 8 else np.uint8
             image = np.frombuffer(cbuf, dtype=channelType)
             image.shape = (pRequest.imageHeight.read(), pRequest.imageWidth.read(), pRequest.imageChannelCount.read())
+            del cbuf
             np.savez_compressed(filename, image)
 
         pRequest.unlock()
