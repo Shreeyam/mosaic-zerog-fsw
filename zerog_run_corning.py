@@ -41,12 +41,16 @@ def recordImage(filename):
         pRequest = fi.getRequest(requestNr)
 
         if pRequest.isOK:
-            cbuf = (ctypes.c_char * pRequest.imageSize.read()).from_address(int(pRequest.imageData.read()))
+            size = pRequest.imageSize.read()
+            cbuf = (ctypes.c_char * size).from_address(int(pRequest.imageData.read()))
+            print(f"{size}, {requestNr}, {pRequest}")
             channelType = np.uint16 if pRequest.imageChannelBitDepth.read() > 8 else np.uint8
             image = np.frombuffer(cbuf, dtype=channelType)
             image.shape = (pRequest.imageHeight.read(), pRequest.imageWidth.read(), pRequest.imageChannelCount.read())
-            np.save(filename, image)
-            pRequest.unlock()
+            del cbuf
+            np.savez_compressed(filename, image)
+
+        pRequest.unlock()
 
 def getIMUValues(sense):
     accel = sense.get_accelerometer_raw()
