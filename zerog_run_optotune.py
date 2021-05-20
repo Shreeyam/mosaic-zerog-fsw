@@ -9,7 +9,7 @@ import time
 N_VALUES = 64
 START = -20
 STOP = 120
-LENS_ADDRESS = "/dev/serial/by-id/usb-Optotune_LD_Optotune_LD_75738303238351915191-if00"
+LENS_ADDRESS = "/dev/serial/by-id/usb-Optotune_LD_Optotune_LD_5573633373635141E081-if00"
 
 # Initialise devices
 sense = SenseHat()
@@ -24,7 +24,7 @@ pDev = devMgr.getDevice(0)
 pDev.open()
 ac = acquire.CameraSettingsBlueFOX(pDev)
 ac.expose_us.write(10)
-ac.binningMode.write(acquire.cbmBinningHV)
+ac.binningMode.write(acquire.cbmBinning3H3V)
 
 # Get the function interface
 fi = acquire.FunctionInterface(pDev)
@@ -42,12 +42,17 @@ def recordImage(filename):
         pRequest = fi.getRequest(requestNr)
 
         if pRequest.isOK:
-            cbuf = (ctypes.c_char * pRequest.imageSize.read()).from_address(int(pRequest.imageData.read()))
+            size = pRequest.imageSize().read()
+            cbuf = (ctypes.c_char * size).from_address(int(pRequest.imageData.read()))
+            print(size)
+            print(requestNr)
+            print(pRequest)
             channelType = np.uint16 if pRequest.imageChannelBitDepth.read() > 8 else np.uint8
             image = np.frombuffer(cbuf, dtype=channelType)
             image.shape = (pRequest.imageHeight.read(), pRequest.imageWidth.read(), pRequest.imageChannelCount.read())
             np.savez_compressed(filename, image)
-            pRequest.unlock()
+
+        pRequest.unlock()
 
 def getIMUValues(sense):
     accel = sense.get_accelerometer_raw()
@@ -68,6 +73,7 @@ while(1):
         o.current(v)
         time.sleep(0.02)
         sense.clear((80, 80, 0))
+        imu_values = getIMUValues()
         temp = sense.get_temperature()
         pressure = sense.get_pressure()
         sense.clear((0, 80, 0))
