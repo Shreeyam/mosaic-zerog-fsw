@@ -73,7 +73,7 @@ while(1):
         o.current(v)
         time.sleep(0.02)
         sense.clear((80, 80, 0))
-        imu_values = getIMUValues()
+        imu_values = getIMUValues(sense)
         temp = sense.get_temperature()
         pressure = sense.get_pressure()
         sense.clear((0, 80, 0))
