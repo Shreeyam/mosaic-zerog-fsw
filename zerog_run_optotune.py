@@ -42,11 +42,9 @@ def recordImage(filename):
         pRequest = fi.getRequest(requestNr)
 
         if pRequest.isOK:
-            size = pRequest.imageSize().read()
+            size = pRequest.imageSize.read()
             cbuf = (ctypes.c_char * size).from_address(int(pRequest.imageData.read()))
-            print(size)
-            print(requestNr)
-            print(pRequest)
+            print(f"{size}, {requestNr}, {pRequest}")
             channelType = np.uint16 if pRequest.imageChannelBitDepth.read() > 8 else np.uint8
             image = np.frombuffer(cbuf, dtype=channelType)
             image.shape = (pRequest.imageHeight.read(), pRequest.imageWidth.read(), pRequest.imageChannelCount.read())
