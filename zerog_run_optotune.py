@@ -23,7 +23,7 @@ pDev = devMgr.getDevice(0)
 # Set up camera and get the function interface
 pDev.open()
 ac = acquire.CameraSettingsBlueFOX(pDev)
-ac.expose_us.write(10)
+ac.expose_us.write(100)
 ac.binningMode.write(acquire.cbmBinningHV)
 
 # Get the function interface
