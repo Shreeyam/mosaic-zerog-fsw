@@ -7,8 +7,8 @@ import time
 
 # config
 N_VALUES = 64
-START = 24000
-STOP = 30000
+START = 25500
+STOP = 29500
 LENS_ADDRESS = "/dev/ttyUSB0"
 
 # Initialise devices
@@ -23,7 +23,7 @@ pDev = devMgr.getDevice(0)
 # Set up camera and get the function interface
 pDev.open()
 ac = acquire.CameraSettingsBlueFOX(pDev)
-ac.expose_us.write(1000)
+ac.expose_us.write(100)
 ac.binningMode.write(acquire.cbmBinningHV)
 
 # Get the function interface

@@ -7,8 +7,8 @@ import time
 
 # config
 N_VALUES = 64
-START = -20
-STOP = 120
+START = 70
+STOP = 110
 LENS_ADDRESS = "/dev/serial/by-id/usb-Optotune_LD_Optotune_LD_5573633373635141E081-if00"
 
 # Initialise devices
@@ -23,7 +23,7 @@ pDev = devMgr.getDevice(0)
 # Set up camera and get the function interface
 pDev.open()
 ac = acquire.CameraSettingsBlueFOX(pDev)
-ac.expose_us.write(100)
+ac.expose_us.write(200)
 ac.binningMode.write(acquire.cbmBinningHV)
 
 # Get the function interface
